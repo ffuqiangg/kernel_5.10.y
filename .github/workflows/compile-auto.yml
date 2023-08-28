@@ -66,9 +66,3 @@ jobs:
           ✅ 内核编译完成 *${{ env.PACKAGED_OUTPUTTAGS }}*
           "
           curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_TO }}&text=${MSG}&parse_mode=MarkDown"
-
-      - name: Delete workflow runs
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          retain_days: 10
-          keep_minimum_runs: 5
