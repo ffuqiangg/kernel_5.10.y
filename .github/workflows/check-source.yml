@@ -1,4 +1,4 @@
-name: Checke unifreq K5.10
+name: Checke source
 
 env:
   REPO_URL: https://github.com/unifreq/linux-5.10.y
