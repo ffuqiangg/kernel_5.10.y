@@ -17,7 +17,7 @@ jobs:
         with:
           root-reserve-mb: false
           swap-size-mb: 1024
-          build-mount-path: /
+          build-mount-path: '/dev/root'
           remove-dotnet: true
           remove-android: true
           remove-haskell: true
