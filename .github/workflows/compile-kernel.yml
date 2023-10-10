@@ -1,10 +1,20 @@
-name: Compile kernel
+name: Compile Kernel
 
 on:
   repository_dispatch:
     types:
-      - Compile-kernel
+      - compile-kernel
   workflow_dispatch:
+    inputs:
+      kernel_version:
+        description: "Input kernel version"
+        required: true
+        default: ""
+      kernel_auto:
+        description: "compile latest kernel"
+        required: true
+        default: true
+        type: boolean
 
 env:
   TZ: America/New_York
@@ -17,7 +27,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
       - name: Initialization environment
         id: init
         env:
@@ -35,18 +44,22 @@ jobs:
           sudo -E apt-get clean
           sudo timedatectl set-timezone "${TZ}"
           echo "status=success" >> $GITHUB_OUTPUT
-
+          echo "KERNEL_VERSION=${{ github.event.client_payload.kernel_version }}" >> $GITHUB_ENV
+          echo "KERNEL_AUTO=${{ github.event.client_payload.kernel_auto }}" >> $GITHUB_ENV
+          if [[ ! -n "${{ github.event.client_payload.kernel_version }}" ]]; then
+            echo "KERNEL_VERSION=${{ inputs.kernel_version }}" >> $GITHUB_ENV
+            echo "KERNEL_AUTO=${{ inputs.kernel_auto }}" >> $GITHUB_ENV
+          fi
       - name: Compile the kernel
         uses: ophub/amlogic-s9xxx-armbian@main
         with:
           build_target: kernel
-          kernel_version: ${{ github.event.client_payload.kernel_version }}
-          kernel_auto: ${{ github.event.client_payload.kernel_auto }}
+          kernel_version: ${KERNEL_VERSION}
+          kernel_auto: ${KERNEL_AUTO}
           kernel_package: all
           kernel_sign: -ffuqiangg
           kernel_source: unifreq
           kernel_toolchain: gcc
-
       - name: Upload Kernel to Release
         uses: ncipollo/release-action@main
         if: env.PACKAGED_STATUS == 'success' && !cancelled()
@@ -57,7 +70,6 @@ jobs:
           removeArtifacts: false
           replacesArtifacts: true
           token: ${{ secrets.GH_TOKEN }}
-
       - name: Telegram notification
         run: |
           MSG="✅ 内核编译完成 *${{ env.PACKAGED_OUTPUTTAGS }}*"
