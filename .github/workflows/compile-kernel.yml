@@ -64,13 +64,13 @@ jobs:
         uses: ncipollo/release-action@main
         if: env.PACKAGED_STATUS == 'success' && !cancelled()
         with:
-          tag: kernel_${{ env.PACKAGED_OUTPUTTAGS }}
-          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          tag: kernel_${PACKAGED_OUTPUTTAGS}
+          artifacts: ${PACKAGED_OUTPUTPATH}/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
           token: ${{ secrets.GH_TOKEN }}
       - name: Telegram notification
         run: |
-          MSG="✅ 内核编译完成 *${{ env.PACKAGED_OUTPUTTAGS }}*"
+          MSG="✅ 内核编译完成 *${PACKAGED_OUTPUTTAGS}*"
           curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_TO }}&text=${MSG}&parse_mode=MarkDown"
