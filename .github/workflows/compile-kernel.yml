@@ -54,8 +54,8 @@ jobs:
         uses: ophub/amlogic-s9xxx-armbian@main
         with:
           build_target: kernel
-          kernel_version: ${KERNEL_VERSION}
-          kernel_auto: ${KERNEL_AUTO}
+          kernel_version: ${{ env.KERNEL_VERSION }}
+          kernel_auto: ${{ env.KERNEL_AUTO }}
           kernel_package: all
           kernel_sign: -ffuqiangg
           kernel_source: unifreq
