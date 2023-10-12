@@ -62,7 +62,7 @@ jobs:
           kernel_toolchain: gcc
       - name: Upload Kernel to Release
         uses: ncipollo/release-action@main
-        if: env.PACKAGED_STATUS == 'success' && !cancelled()
+        if: $PACKAGED_STATUS == 'success' && !cancelled()
         with:
           tag: kernel_${PACKAGED_OUTPUTTAGS}
           artifacts: ${PACKAGED_OUTPUTPATH}/*
