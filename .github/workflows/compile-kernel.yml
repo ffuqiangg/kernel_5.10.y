@@ -46,7 +46,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
           echo "KERNEL_VERSION=${{ github.event.client_payload.kernel_version }}" >> $GITHUB_ENV
           echo "KERNEL_AUTO=${{ github.event.client_payload.kernel_auto }}" >> $GITHUB_ENV
-          if [[ -z ${KERNEL_VERSION} ]]; then
+          if [[ ${{ github.evnet_name }} == 'workflow_dispatch' ]]; then
             echo "KERNEL_VERSION=${{ inputs.kernel_version }}" >> $GITHUB_ENV
             echo "KERNEL_AUTO=${{ inputs.kernel_auto }}" >> $GITHUB_ENV
           fi
@@ -64,8 +64,8 @@ jobs:
         uses: ncipollo/release-action@main
         if: env.PACKAGED_STATUS == 'success' && !cancelled()
         with:
-          tag: kernel_${PACKAGED_OUTPUTTAGS}
-          artifacts: ${PACKAGED_OUTPUTPATH}/*
+          tag: kernel_${{ env.PACKAGED_OUTPUTTAGS }}
+          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
