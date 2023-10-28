@@ -54,8 +54,8 @@ jobs:
         uses: ophub/amlogic-s9xxx-armbian@main
         with:
           build_target: kernel
-          kernel_version: ${{ env.KERNEL_VERSION }}
-          kernel_auto: ${{ env.KERNEL_AUTO }}
+          kernel_version: ${KERNEL_VERSION}
+          kernel_auto: ${KERNEL_AUTO}
           kernel_package: all
           kernel_sign: -ffuqiangg
           kernel_source: unifreq
@@ -64,8 +64,8 @@ jobs:
         uses: ncipollo/release-action@main
         if: env.PACKAGED_STATUS == 'success' && !cancelled()
         with:
-          tag: kernel_${{ env.PACKAGED_OUTPUTTAGS }}
-          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
+          tag: kernel_${PACKAGED_OUTPUTTAGS}
+          artifacts: ${PACKAGED_OUTPUTPATH}/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
