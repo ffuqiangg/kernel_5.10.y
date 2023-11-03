@@ -27,6 +27,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Initialization environment
         id: init
         env:
@@ -43,34 +44,37 @@ jobs:
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
           sudo timedatectl set-timezone "${TZ}"
-          echo "status=success" >> $GITHUB_OUTPUT
-          echo "KERNEL_VERSION=${{ github.event.client_payload.kernel_version }}" >> $GITHUB_ENV
-          echo "KERNEL_AUTO=${{ github.event.client_payload.kernel_auto }}" >> $GITHUB_ENV
+          echo "status=success" >> ${GITHUB_OUTPUT}
+          echo "KERNEL_VERSION=${{ github.event.client_payload.kernel_version }}" >> ${GITHUB_ENV}
+          echo "KERNEL_AUTO=${{ github.event.client_payload.kernel_auto }}" >> ${GITHUB_ENV}
           if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
-            echo "KERNEL_VERSION=${{ inputs.kernel_version }}" >> $GITHUB_ENV
-            echo "KERNEL_AUTO=${{ inputs.kernel_auto }}" >> $GITHUB_ENV
+            echo "KERNEL_VERSION=${{ inputs.kernel_version }}" >> ${GITHUB_ENV}
+            echo "KERNEL_AUTO=${{ inputs.kernel_auto }}" >> ${GITHUB_ENV}
           fi
+
       - name: Compile the kernel
         uses: ophub/amlogic-s9xxx-armbian@main
         with:
           build_target: kernel
-          kernel_version: ${KERNEL_VERSION}
-          kernel_auto: ${KERNEL_AUTO}
+          kernel_version: ${{ env.KERNEL_VERSION }}
+          kernel_auto: ${{ env.KERNEL_AUTO }}
           kernel_package: all
           kernel_sign: -ffuqiangg
           kernel_source: unifreq
           kernel_toolchain: clang
+
       - name: Upload Kernel to Release
         uses: ncipollo/release-action@main
         if: env.PACKAGED_STATUS == 'success' && !cancelled()
         with:
-          tag: kernel_${PACKAGED_OUTPUTTAGS}
-          artifacts: ${PACKAGED_OUTPUTPATH}/*
+          tag: kernel_${{ env.PACKAGED_OUTPUTTAGS }}
+          artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
           allowUpdates: true
           removeArtifacts: false
           replacesArtifacts: true
           token: ${{ secrets.GH_TOKEN }}
+
       - name: Telegram notification
         run: |
-          MSG="✅ 内核编译完成 *${PACKAGED_OUTPUTTAGS}*"
+          MSG="✅ 内核编译完成 *${{ env.PACKAGED_OUTPUTTAGS }}*"
           curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_TO }}&text=${MSG}&parse_mode=MarkDown"
