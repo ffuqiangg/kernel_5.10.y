@@ -9,7 +9,7 @@ on:
       kernel_version:
         description: "Input kernel version"
         required: true
-        default: ""
+        default: "5.10.1"
       kernel_auto:
         description: "compile latest kernel"
         required: true
